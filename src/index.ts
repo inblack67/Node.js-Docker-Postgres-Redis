@@ -5,8 +5,6 @@ import 'colors';
 
 const main = async () =>
 {
-    console.log( 'process.env.REDIS_HOST = ', process.env.REDIS_HOST );
-
     const redis = new Redis( {
         host: process.env.REDIS_HOST,
         port: 6379
@@ -21,8 +19,6 @@ const main = async () =>
     {
         try
         {
-            console.log( 'POSTGRES_USER = ', process.env.POSTGRES_USER );
-            console.log( 'POSTGRES_PASSWORD = ', process.env.POSTGRES_PASSWORD );
             await createConnection( {
                 type: 'postgres',
                 database: 'test',
