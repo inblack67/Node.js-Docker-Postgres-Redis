@@ -1,27 +1,48 @@
 import express, { Request, Response } from 'express';
 import { createConnection } from 'typeorm';
-import 'dotenv-safe/config';
 import Redis from 'ioredis';
 import 'colors';
 
 const main = async () =>
 {
+    console.log( 'process.env.REDIS_HOST = ', process.env.REDIS_HOST );
+
     const redis = new Redis( {
-        host: process.env.REDIS_URL
+        host: process.env.REDIS_HOST,
+        port: 6379
     } );
 
     await redis.lpush( 'ok', 1 );
     const res = await redis.lrange( 'ok', 0, -1 );
     console.log( 'res = ', res );
 
-    await createConnection( {
-        type: 'postgres',
-        url: process.env.DB_URL,
-        synchronize: true,
-        logging: true
-    } );
-
-    console.log( 'Postgres is here'.blue.bold );
+    let retries = 5;
+    while ( retries )
+    {
+        try
+        {
+            console.log( 'POSTGRES_USER = ', process.env.POSTGRES_USER );
+            console.log( 'POSTGRES_PASSWORD = ', process.env.POSTGRES_PASSWORD );
+            await createConnection( {
+                type: 'postgres',
+                database: 'test',
+                username: process.env.POSTGRES_USER,
+                password: process.env.POSTGRES_PASSWORD,
+                logging: true,
+                synchronize: true,
+                host: process.env.DB_HOST,
+            } );
+            console.log( 'Postgres is here'.blue.bold );
+            break;
+        } catch ( err )
+        {
+            console.log( 'inside typeorm...' );
+            console.error( err );
+            retries -= 1;
+            console.log( 'retries left = ', retries );
+            await new Promise( res => setTimeout( res, 5000 ) );
+        }
+    }
 
     const app = express();
 
