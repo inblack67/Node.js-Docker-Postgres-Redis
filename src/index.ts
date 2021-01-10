@@ -14,7 +14,7 @@ const main = async () =>
     const res = await redis.lrange( 'ok', 0, -1 );
     console.log( 'res = ', res );
 
-    let retries = 5;
+    let retries = 20;
     while ( retries )
     {
         try
