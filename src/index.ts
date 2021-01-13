@@ -48,7 +48,7 @@ const main = async () =>
         res.end();
     } );
 
-    const PORT = +process.env.PORT;
+    const PORT = Number( process.env.PORT ) || 5000;
     app.listen( PORT, () =>
     {
         console.log( `Server started on port ${ PORT }`.green.bold );
